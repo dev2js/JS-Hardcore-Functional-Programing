@@ -75,7 +75,7 @@ With Currying:
     
     const compose = (function1, function2) => argument => function2(function1(argument));
     
-    // rewritting add110 with above compose 
+    // rewritting add110 with above compose which execute the function from right <= Left
     const add110 = compose(add10, add100);
     
     add110(argument); => add110(200) // 310
@@ -83,7 +83,53 @@ With Currying:
   - Composing Multiple Function (Arbitrary Arguments). 
   > Higer order function is useful for composing two functions only. To add more functions together we can leverage reduce. 
 
-   
-    const compose = (...functions) => arguments => functions.reduce((argument, function) => function(argument), arguments);
-   
+    const compose = (...functions) => argument => functions.reduce((a, b) => argument => b(a(argument)), i => i);
+Explanation for multiple functions compose :
+
+    const compose = (...functions) => argument => ....
+
+Capturing the array of functions argument and return to a newer function that will take single argument. By this we donot want to compose all our functions and use at once. Capturing of functions as an argument is called Closure. 
+
+The later part of compose is 
+
+```javascript
+i => i
+//Equivalent of 
+function identity(i) {
+  return i;
+}
+```
+This is for a foolproof mechanism is the array of function contains single method, for compose they require more than one. To ensure we will always return a function and the function will have minimum return argument unmodified. 
+
+Discussing about the core part of compose, which actually composing list of functions together with javascript's [Array.prototype.reduce()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce) method.
+```javascript
+functions.reduce((a, b) => argument => b(a(argument))
+
+//Equivalent of 
+functions.reduce((composition, nextFunc) => {
+    return argument => {
+        const result = nextFunc(argument)
+        return composition(result);
+    }
+})
+```
+
+-Debugging compose:
+    We can achieve debugging compose method by introducing an logger method and adding to the list of compose methods between two execution methods. 
+    
+```javascript
+const modifiedStr = compose([boldProperty, addQuotes, convertPath, removeVowel, upperCase]);
+
+modififiedStr(“string convert”);
+
+
+//Debugger:
+const customLog = (argument) => {
+	return console.log(argument);
+}
+ 
+const modifiedStrWithLogger = compose ([boldProperty, customLog, addQuotes, customLog, convertPath, customLog,  removeVowel, customLog, upperCase]);
+
+```
+
 **[⬆ back to top](#table-of-contents)**

@@ -83,7 +83,7 @@ With Currying:
   - Composing Multiple Function (Arbitrary Arguments). 
   > Higer order function is useful for composing two functions only. To add more functions together we can leverage reduce. 
 
-    ```javascript
+   
     const compose = (...functions) => arguments => functions.reduce((argument, function) => function(argument), arguments);
-    ```
+   
 **[⬆ back to top](#table-of-contents)**
